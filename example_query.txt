@@ -1,0 +1,47 @@
+https://data.ssb.no/api/v0/no/table/11342
+
+{
+  "query": [
+    {
+      "code": "Region",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "0",
+          "31",
+          "3101",
+          "99",
+          "9999"
+        ]
+      }
+    },
+    {
+      "code": "ContentsCode",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "Folkemengde",
+          "ArealKm2",
+          "LandArealKm2",
+          "FolkeLandArealKm2"
+        ]
+      }
+    },
+    {
+      "code": "Tid",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2007",
+          "2008",
+          "2009",
+          "2023",
+          "2024"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "json-stat2"
+  }
+}
