@@ -21,6 +21,7 @@ import axios from "axios";
 import "./index.css";
 
 import Select from "./components/multi-select";
+import Switch from "@mui/material/Switch";
 import MakeTable from "./components/MakeTable";
 
 import { useEffect, useState } from "react";
@@ -31,9 +32,10 @@ for (let i = 2007; i <= 2024; i++) {
 }
 
 function App() {
-  const [selectedStatistikkvariabel, setSelectedStatistikkvariabel] = useState<string[] | null>(null);
-  const [selectedYears, setSelectedYears] = useState<string[] | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState<string[] | null>(null);
+  const [selectedStatistikkvariabel, setSelectedStatistikkvariabel] = useState<string[] | null>([]);
+  const [selectedYears, setSelectedYears] = useState<string[] | null>([]);
+  const [selectedRegion, setSelectedRegion] = useState<string[] | null>([]);
+  const [switchValue, setSwitchValue] = useState<boolean>(true);
 
   const [selectedStatistikkvariabelTable, setSelectedStatistikkvariabelTable] = useState<string[] | null>(null);
   const [selectedYearsTable, setSelectedYearsTable] = useState<string[] | null>(null);
@@ -69,6 +71,11 @@ function App() {
       regionValues.push(RegionLabelObject[objectKey]);
     }
     return regionValues;
+  };
+
+  const handleSwitch = () => {
+    setSwitchValue(!switchValue);
+    console.log(switchValue);
   };
 
   const doQuery = async () => {
@@ -137,7 +144,7 @@ function App() {
   return (
     <>
       <div className="flex flex-row bg-slate-200">
-        <div className="border-2 border-red-500 h-screen">
+        <div className="border-4 border-black h-screen">
           <p className="text-4xl p-2">
             Befolkning: data fra{" "}
             <a className=" text-blue-500 underline" href="https://www.ssb.no/statbank/table/11342">
@@ -166,20 +173,41 @@ function App() {
               setSelectedYears as React.Dispatch<React.SetStateAction<{ value: string; label: string }[] | null>>
             }
           ></Select>
-          <p>Region (Legg inn option for Kommune eller Fylke)</p>
-          <Select
-            availableItemsList={[
-              { label: "Molde (-2019)", value: "1502" },
-              { label: "Molde", value: "1506" },
-              { label: "Gloppen (-2019)", value: "1445" },
-              { label: "Ås", value: "3218" },
-              { label: "Oslo", value: "0301" },
-              { label: "Halden", value: "3101" },
-            ]}
-            setUseState={
-              setSelectedRegion as React.Dispatch<React.SetStateAction<{ value: string; label: string }[] | null>>
-            }
-          ></Select>
+          <p>Region</p>
+          <div className="flex flex-row items-center justify-center">
+            {"Kommune"}
+            <Switch size="medium" onChange={handleSwitch}></Switch>
+            {"Fylke"}
+          </div>
+          {switchValue && (
+            <Select
+              availableItemsList={[
+                { label: "Molde (-2019)", value: "1502" },
+                { label: "Molde", value: "1506" },
+                { label: "Gloppen (-2019)", value: "1445" },
+                { label: "Ås", value: "3218" },
+                { label: "Oslo", value: "0301" },
+                { label: "Halden", value: "3101" },
+              ]}
+              setUseState={
+                setSelectedRegion as React.Dispatch<React.SetStateAction<{ value: string; label: string }[] | null>>
+              }
+            ></Select>
+          )}
+          {!switchValue && (
+            <Select
+              availableItemsList={[
+                { label: "Østfold", value: "31" },
+                { label: "Akershus", value: "32" },
+                { label: "Oslo", value: "03" },
+                { label: "Innlandet", value: "34" },
+              ]}
+              setUseState={
+                setSelectedRegion as React.Dispatch<React.SetStateAction<{ value: string; label: string }[] | null>>
+              }
+            ></Select>
+          )}
+
           <div
             id="submit"
             onClick={() => {
@@ -190,7 +218,7 @@ function App() {
             Submit Query
           </div>
         </div>
-        <div className="flex border-2 border-red-500 w-screen justify-center items-center">
+        <div className="flex w-screen justify-center items-center">
           <MakeTable
             tableHeader={selectedStatistikkvariabelTable}
             tableYears={selectedYearsTable}

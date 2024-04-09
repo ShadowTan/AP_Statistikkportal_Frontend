@@ -9,6 +9,7 @@ interface tableValues {
 
 const MakeTable: FC<tableValues> = ({ tableHeader, tableYears, row, items }) => {
   let count = 0;
+  let rowCount = 0;
 
   return (
     <>
@@ -42,7 +43,8 @@ const MakeTable: FC<tableValues> = ({ tableHeader, tableYears, row, items }) => 
           </tr>
 
           {row.map((row) => (
-            <tr className={`${count % 2 == 0 ? "bg-gray-300" : "bg-red-300"}`}>
+            <tr className={`${rowCount % 2 == 0 ? "bg-gray-300" : "bg-red-300"}`}>
+              <p className="hidden">{rowCount++}</p>
               <th className="border-2 border-black" key={row}>
                 {row}
               </th>
