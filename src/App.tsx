@@ -39,7 +39,7 @@ function App() {
 
   const [selectedStatistikkvariabelTable, setSelectedStatistikkvariabelTable] = useState<string[] | null>(null);
   const [selectedYearsTable, setSelectedYearsTable] = useState<string[] | null>(null);
-  const [selectedRegionTable, setSelectedRegionTable] = useState<string[] | null>(null);
+  const [selectedRegionTable, setSelectedRegionTable] = useState<string[] | null | undefined>(null);
   const [tableData, setTableData] = useState<string[] | null>(null);
 
   useEffect(() => {
@@ -60,14 +60,19 @@ function App() {
     }
   }, [selectedStatistikkvariabel, selectedYears, selectedRegion]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getKeyByValue = async (object: any, value: any) => {
     return Object.keys(object).find((key) => object[key] === value);
   };
 
-  const getRegionValues = async (RegionIndexObject, RegionLabelObject) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getRegionValues = async (RegionIndexObject: any, RegionLabelObject: any) => {
     const regionValues: string[] = [];
     for (let i = 0; i < Object.keys(RegionIndexObject).length; i++) {
       const objectKey: string | undefined = await getKeyByValue(RegionIndexObject, i);
+      if (!objectKey) {
+        return;
+      }
       regionValues.push(RegionLabelObject[objectKey]);
     }
     return regionValues;
@@ -75,7 +80,6 @@ function App() {
 
   const handleSwitch = () => {
     setSwitchValue(!switchValue);
-    console.log(switchValue);
   };
 
   const doQuery = async () => {
@@ -83,10 +87,15 @@ function App() {
     if (!selectedStatistikkvariabel || !selectedYears || !selectedRegion) {
       return;
     }
+    //@ts-expect-error unable to change type of item to match
     const StatistikkvariabelValues = selectedStatistikkvariabel.map((item) => item.value);
-    const YearsValues = selectedYears.map((items) => items.value);
-    const RegionValues = selectedRegion.map((items) => items.value);
+    //@ts-expect-error unable to change type of item to match
+    const YearsValues = selectedYears.map((item) => item.value);
+    //@ts-expect-error unable to change type of item to match
+    const RegionValues = selectedRegion.map((item) => item.value);
     // console.log(StatistikkvariabelValues, YearsValues, RegionValues);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any = await axios.post(
       "https://data.ssb.no/api/v0/no/table/11342",
       {
@@ -124,13 +133,7 @@ function App() {
     // console.log(result.data);
     const RegionIndexObject = result.data.dimension.Region.category.index;
     const RegionLabelObject = result.data.dimension.Region.category.label;
-    let regionValues = await getRegionValues(RegionIndexObject, RegionLabelObject);
-
-    console.log(Object.keys(RegionIndexObject).length);
-
-    console.log(RegionIndexObject);
-    console.log(RegionLabelObject);
-    console.log(regionValues);
+    const regionValues = await getRegionValues(RegionIndexObject, RegionLabelObject);
 
     // const regionValues: string[] = Object.values(result.data.dimension.Region.category.label);
     const yearsValues: string[] = Object.values(result.data.dimension.Tid.category.label);

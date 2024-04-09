@@ -3,7 +3,7 @@ import { FC } from "react";
 interface tableValues {
   tableHeader: string[] | null;
   tableYears: string[] | null;
-  row: string[] | null;
+  row: string[] | null | undefined;
   items: string[] | null;
 }
 
