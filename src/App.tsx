@@ -47,7 +47,6 @@ function App() {
       return;
     }
     if (!selectedStatistikkvariabel || !selectedYears || !selectedRegion) {
-      console.log("Hi");
       submitButton.classList.remove("bg-green-500");
       submitButton.classList.add("bg-gray-50");
 
@@ -59,6 +58,19 @@ function App() {
     }
   }, [selectedStatistikkvariabel, selectedYears, selectedRegion]);
 
+  const getKeyByValue = async (object: any, value: any) => {
+    return Object.keys(object).find((key) => object[key] === value);
+  };
+
+  const getRegionValues = async (RegionIndexObject, RegionLabelObject) => {
+    const regionValues: string[] = [];
+    for (let i = 0; i < Object.keys(RegionIndexObject).length; i++) {
+      const objectKey: string | undefined = await getKeyByValue(RegionIndexObject, i);
+      regionValues.push(RegionLabelObject[objectKey]);
+    }
+    return regionValues;
+  };
+
   const doQuery = async () => {
     console.log("Doing request");
     if (!selectedStatistikkvariabel || !selectedYears || !selectedRegion) {
@@ -67,7 +79,7 @@ function App() {
     const StatistikkvariabelValues = selectedStatistikkvariabel.map((item) => item.value);
     const YearsValues = selectedYears.map((items) => items.value);
     const RegionValues = selectedRegion.map((items) => items.value);
-    console.log(StatistikkvariabelValues, YearsValues, RegionValues);
+    // console.log(StatistikkvariabelValues, YearsValues, RegionValues);
     const result: any = await axios.post(
       "https://data.ssb.no/api/v0/no/table/11342",
       {
@@ -103,14 +115,22 @@ function App() {
       }
     );
     // console.log(result.data);
-    console.log(result.data.dimension.Region.category);
-    console.log(result.data.value);
-    const regionValues: string[] = Object.values(result.data.dimension.Region.category.label);
+    const RegionIndexObject = result.data.dimension.Region.category.index;
+    const RegionLabelObject = result.data.dimension.Region.category.label;
+    let regionValues = await getRegionValues(RegionIndexObject, RegionLabelObject);
+
+    console.log(Object.keys(RegionIndexObject).length);
+
+    console.log(RegionIndexObject);
+    console.log(RegionLabelObject);
+    console.log(regionValues);
+
+    // const regionValues: string[] = Object.values(result.data.dimension.Region.category.label);
     const yearsValues: string[] = Object.values(result.data.dimension.Tid.category.label);
 
+    setSelectedRegionTable(regionValues);
     setSelectedStatistikkvariabelTable(StatistikkvariabelValues);
     setSelectedYearsTable(yearsValues.map((item) => item));
-    setSelectedRegionTable(regionValues.map((item) => item));
     setTableData(result.data.value);
   };
 

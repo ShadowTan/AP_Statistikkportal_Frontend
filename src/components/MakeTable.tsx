@@ -42,7 +42,7 @@ const MakeTable: FC<tableValues> = ({ tableHeader, tableYears, row, items }) => 
           </tr>
 
           {row.map((row) => (
-            <tr>
+            <tr className={`${count % 2 == 0 ? "bg-gray-300" : "bg-red-300"}`}>
               <th className="border-2 border-black" key={row}>
                 {row}
               </th>
